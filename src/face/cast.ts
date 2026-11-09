@@ -22,6 +22,26 @@ export const faces = {
 
 export type FaceKey = keyof typeof faces;
 
+export type FaceCatalog = { [K in FaceKey]: { src: string; mood: string } };
+
+/** The same actions as the boy, drawn for her. */
+export const girlFaces: FaceCatalog = {
+  base: { src: "/faces/girl.png", mood: "chill" },
+  l_left: { src: "/faces/girl-l-left.png", mood: "watching you" },
+  l_right: { src: "/faces/girl-l-right.png", mood: "watching you" },
+  x_cross: { src: "/faces/girl-x-cross.png", mood: "suspicious" },
+  x_tongue: { src: "/faces/girl-x-tongue.png", mood: "goofy" },
+  x_shock: { src: "/faces/girl-x-shock.png", mood: "startled" },
+  x_laugh: { src: "/faces/girl-x-laugh.png", mood: "cackling" },
+  x_skeptic: { src: "/faces/girl-x-skeptic.png", mood: "unconvinced" },
+  x_whistle: { src: "/faces/girl-x-whistle.png", mood: "innocent" },
+  x_smug: { src: "/faces/girl-x-smug.png", mood: "smug" },
+  x_dizzy: { src: "/faces/girl-x-dizzy.png", mood: "seeing stars" },
+  g_grimace: { src: "/faces/girl-g-grimace.png", mood: "being squeezed" },
+  g_ouch: { src: "/faces/girl-g-ouch.png", mood: "OW" },
+  g_squish: { src: "/faces/girl-g-squish.png", mood: "pinched" },
+};
+
 /** Faces dealt at random when a stretch is let go. */
 export const releaseFaces: FaceKey[] = ["x_tongue", "x_laugh", "x_skeptic", "x_whistle", "x_smug", "x_cross"];
 

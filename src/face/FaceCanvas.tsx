@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { faces, releaseFaces, rig, type FaceKey } from "./cast";
+import { faces, releaseFaces, rig, type FaceCatalog, type FaceKey } from "./cast";
 import { FaceEngine } from "./engine";
 
 export type Mood = { face: FaceKey; patience: number; pulls: number };
@@ -8,6 +8,8 @@ type Props = {
   stageRef: RefObject<HTMLDivElement | null>;
   discColor: string;
   onMood: (mood: Mood) => void;
+  catalog?: FaceCatalog;
+  label: string;
 };
 
 /** Neutral time after a release before he goes back to just watching the cursor. */
@@ -36,7 +38,7 @@ function grabFace(u: number, v: number): FaceKey {
  * pointer events, so the stretched face can spill over the copy without
  * blocking it; grabs only start on opaque pixels of the cut-out.
  */
-export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
+export function FaceCanvas({ stageRef, discColor, onMood, catalog = faces, label }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hitRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
@@ -71,8 +73,8 @@ export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
     };
 
     void (async () => {
-      const keys = Object.keys(faces) as FaceKey[];
-      const loaded = await Promise.all(keys.map((k) => load(faces[k].src)));
+      const keys = Object.keys(catalog) as FaceKey[];
+      const loaded = await Promise.all(keys.map((k) => load(catalog[k].src)));
       if (disposed) return;
       const base = loaded[0];
       if (!base) {
@@ -131,8 +133,8 @@ export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
         const p = e.pick(cursor.x, cursor.y);
         if (p && Math.hypot(p.u - rig.nose.x, p.v - rig.nose.y) < rig.nose.r * 1.4) return "x_cross";
         const dx = (cursor.x - (stage.x + stage.size / 2)) / stage.size;
-        if (dx < -0.42) return "l_left";
-        if (dx > 0.42) return "l_right";
+        if (dx < -0.12) return "l_left";
+        if (dx > 0.12) return "l_right";
         return "base";
       };
 
@@ -267,7 +269,7 @@ export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
       ro.disconnect();
       cleanups.forEach((fn) => fn());
     };
-  }, [stageRef, discColor]);
+  }, [stageRef, discColor, catalog]);
 
   return (
     <>
@@ -275,7 +277,7 @@ export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
       <div
         ref={hitRef}
         role="img"
-        aria-label="A face you can grab and stretch. Pull the hair, a cheek, or the chin."
+        aria-label={label}
         className="absolute z-30 select-none"
       >
         {failed ? (
@@ -289,7 +291,7 @@ export function FaceCanvas({ stageRef, discColor, onMood }: Props) {
                 height: `${rig.disc.r * 200}%`,
               }}
             />
-            <img src={faces.base.src} alt="" className="absolute inset-0 h-full w-full" />
+            <img src={catalog.base.src} alt="" className="absolute inset-0 h-full w-full" />
           </>
         ) : null}
       </div>
